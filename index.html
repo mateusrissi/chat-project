@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body class="text-center">
+    <div id="register-form">
+        <input type="text" id="register-input" placeholder="Insert a user name to start chatting" class="form-control">
+        <button class="btn btn-primary" onclick="register()">Register</button>
+    </div>
+
+    <h3 id="registered-user"></h3>
+
+    <div id="input-message-div" style="display: none;">
+        <input type="text" id="input" class="form-control">
+        <button onclick="send()" class="btn btn-primary">Send</button>
+    </div>
+
+    <div>
+        <h4>Online Users</h4>
+        <ul id="online-users"></ul>
+    </div>
+
+    <div id="messages-div">
+        <h4>Messages</h4>
+        <ul id="messages" style="list-style-type: none;"></ul>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8000')
+        ws.addEventListener('message', function (ev) {
+            try {
+                const ms = JSON.parse(ev.data);
+
+                if (ms.type == 'join') {
+                    add_user(ms.message);
+                }
+
+                if (ms.type == 'online') {
+                    ms.message.users.map((user) => add_user(user));
+                }
+
+                if (ms.type == 'left') {
+                    remove_user(ms.message);
+                }
+
+                if (ms.type == 'registered') {
+                    const register_form = document.getElementById("register-form");
+                    register_form.style.display = 'none';
+
+                    const input_message = document.getElementById("input-message-div");
+                    input_message.style.display = '';
+
+                    const registered_user_div = document.getElementById("registered-user");
+                    const registered_username = document.getElementById("register-input");
+                    registered_user_div.innerText = registered_username.value;
+                }
+
+                if (ms.type == 'message') {
+                    add_message(ms.message);
+                }
+            } catch (error) {
+                return false;
+            }
+        });
+
+        function send() {
+            const input = document.getElementById('input');
+            const username = document.getElementById("registered-user");
+
+            const data = JSON.stringify({ type: 'message', message: { name: username.innerText, message: input.value } });
+            ws.send(data);
+        }
+
+        function register() {
+            const registerInput = document.getElementById('register-input');
+            const data = JSON.stringify({ type: 'register', name: registerInput.value });
+            ws.send(data);
+        }
+
+        function add_user(name) {
+            const ul = document.getElementById("online-users");
+            const li = document.createElement("li");
+            li.innerText = name;
+            ul.appendChild(li);
+        }
+
+        function remove_user(name) {
+            const ul = document.getElementById("online-users");
+            const lis = ul.querySelectorAll('li');
+            Array.from(lis).map((li) => {
+                if (li.innerText == name) {
+                    li.remove();
+                }
+            });
+        }
+
+        function add_message(message) {
+            const ul = document.getElementById("messages");
+            const li = document.createElement("li");
+            li.innerText = message.name + ": " + message.message;
+            ul.appendChild(li);
+        }
+    </script>
+</body>
+
+</html>
