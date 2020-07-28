@@ -107,8 +107,7 @@ if (import.meta.main) {
       })
         .then(handleWs)
         .catch(async (err) => {
-
-          console.log(req);
+          //console.log(req);
           console.error(`failed to accept websocket: ${err}`);
           await req.respond({ body: "Not found", status: 400 });
         });

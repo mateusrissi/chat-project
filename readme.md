@@ -6,4 +6,8 @@ The frontend is still a mess.
 
 ### Run
 
-For running the app use the command `deno run --allow-net --allow-read app.ts` and then go to `http://localhost:8000/chat`.
+For running the app use the command `deno run --allow-net --allow-read src/app.ts` and then go to `http://localhost:8000/chat`.
+
+### Screenshots
+
+<img src="images/chat.jpg" alt="Chat Screenshot" border="1"/>
