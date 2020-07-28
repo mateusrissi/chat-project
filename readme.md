@@ -10,4 +10,4 @@ For running the app use the command `deno run --allow-net --allow-read src/app.t
 
 ### Screenshots
 
-<img src="images/chat.jpg" alt="Chat Screenshot" border="1"/>
+<img src="images/chat-ss.jpg" alt="Chat Screenshot"/>
